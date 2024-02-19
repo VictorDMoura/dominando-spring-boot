@@ -1,15 +1,17 @@
 package academy.devdojo.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.List;
 
 
-@Getter
+@Data
 @AllArgsConstructor
 public class Anime {
     private Long id;
+    @JsonProperty(value = "name")
     private String name;
 
 
