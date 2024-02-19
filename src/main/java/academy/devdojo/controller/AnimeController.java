@@ -1,12 +1,17 @@
 package academy.devdojo.controller;
 
 import academy.devdojo.domain.Anime;
+import academy.devdojo.mapper.AnimeMapper;
+import academy.devdojo.request.AnimePostRequest;
+import academy.devdojo.response.AnimeGetResponse;
+import academy.devdojo.response.AnimePostResponse;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @RestController
 @RequestMapping({"v1/animes", "v1/animes/"})
@@ -14,36 +19,43 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AnimeController {
 
     List<Anime> animes = new ArrayList<>(Anime.list());
+    private static final AnimeMapper MAPPER = AnimeMapper.INSTANCE;
 
     @GetMapping
-    public List<Anime> list() {
+    public ResponseEntity<List<AnimeGetResponse>> list() {
         log.info("Request received list");
-        return animes;
+        List<AnimeGetResponse> animeList = MAPPER.toAnimeGetResponseList(animes);
+        return ResponseEntity.ok(animeList);
     }
 
     @GetMapping("filter")
-    public Anime findByName(@RequestParam(defaultValue = "") String name) {
+    public ResponseEntity<AnimeGetResponse> findByName(@RequestParam(defaultValue = "") String name) {
         log.info("Request received findByName: " + name);
-        return animes.stream()
-                .filter(anime -> anime.getName().equalsIgnoreCase(name))
+        Anime animeFound = animes.stream()
+                .filter(a -> a.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
+        return ResponseEntity.ok(MAPPER.toAnimeGetResponse(animeFound));
     }
 
     @GetMapping("{id}")
-    public Anime findById(@PathVariable long id) {
+    public ResponseEntity<AnimeGetResponse> findById(@PathVariable long id) {
         log.info("Request received findById: " + id);
-        return animes.stream()
-                .filter(anime -> anime.getId() == id)
+
+        Anime animeFound = animes.stream()
+                .filter(a -> a.getId().equals(id))
                 .findFirst()
                 .orElse(null);
+        return ResponseEntity.ok(MAPPER.toAnimeGetResponse(animeFound));
     }
 
     @PostMapping
-    public Anime save(@RequestBody Anime anime) {
-        log.info("Request received save: " + anime.getName());
-        anime.setId(ThreadLocalRandom.current().nextLong(6, 1000000));
+    public ResponseEntity<AnimePostResponse> save(@RequestBody AnimePostRequest request) {
+        log.info("Request received save: " + request);
+        var anime = MAPPER.toAnime(request);
+        var response = MAPPER.toAnimePostResponse(anime);
+
         animes.add(anime);
-        return anime;
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
