@@ -1,5 +1,6 @@
 package academy.devdojo.controller;
 
+import academy.devdojo.mapper.ProducerMapper;
 import academy.devdojo.domain.Producer;
 import academy.devdojo.request.ProducerPostRequest;
 import academy.devdojo.response.ProducerPostResponse;
@@ -11,9 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.concurrent.ThreadLocalRandom;
-
 @RestController
 @RequestMapping(path = {"v1/producers", "v1/producers/"})
 public class ProducerController {
@@ -21,16 +19,11 @@ public class ProducerController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE,
             headers = "X-API-VERSION=v1")
     public ResponseEntity<ProducerPostResponse> save(@RequestBody ProducerPostRequest request) {
-        var producer = Producer.builder().name(request.getName())
-                .id(ThreadLocalRandom.current().nextLong(100_000))
-                .createAt(LocalDateTime.now())
-                .build();
+        ProducerMapper mapper = ProducerMapper.INSTANCE;
+        Producer producer = mapper.toProducer(request);
         Producer.list().add(producer);
+        ProducerPostResponse response = mapper.toProducerPostResponse(producer);
 
-        var response = ProducerPostResponse.builder()
-                .id(producer.getId())
-                .name(producer.getName())
-                .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
