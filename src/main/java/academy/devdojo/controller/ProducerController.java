@@ -64,7 +64,7 @@ public class ProducerController {
 
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<Void> replace(@RequestBody ProducerPutRequest request) {
         log.info("Request received to update producer with '{}'", request);
         var producerFound = Producer.list()
