@@ -51,13 +51,13 @@ public class ProducerController {
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         log.info("Request received to delete producer with id '{}'", id);
-        var producer = Producer.list()
+        var producerFound = Producer.list()
                 .stream()
                 .filter(p -> p.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producer not found to be deleted"));
 
-        Producer.list().remove(producer);
+        Producer.list().remove(producerFound);
         return ResponseEntity.noContent().build();
 
 
