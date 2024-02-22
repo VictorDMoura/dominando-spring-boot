@@ -9,7 +9,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -21,8 +20,7 @@ public interface AnimeMapper {
     @Mapping(target = "id", expression = "java(java.util.concurrent.ThreadLocalRandom.current().nextLong(100_000))")
     Anime toAnime(AnimePostRequest request);
 
-    @Mapping(source = "createdAt",target = "createdAt")
-    Anime toAnime(AnimePutRequest request, LocalDateTime createdAt);
+    Anime toAnime(AnimePutRequest request);
 
     AnimePostResponse toAnimePostResponse(Anime anime);
 
