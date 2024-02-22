@@ -28,7 +28,11 @@ public class ProducerHardCodedRepository {
     }
 
     public List<Producer> findByName(String name) {
-        return PRODUCERS.stream().filter(p -> p.getName().equalsIgnoreCase(name)).toList();
+        return name == null ? findAll() :
+                PRODUCERS
+                        .stream()
+                        .filter(p -> p.getName().equalsIgnoreCase(name))
+                        .toList();
     }
 
     public Producer save(Producer producer) {
@@ -40,7 +44,7 @@ public class ProducerHardCodedRepository {
         PRODUCERS.removeIf(p -> p.getId().equals(id));
     }
 
-    public void update(Producer producer){
+    public void update(Producer producer) {
         deleteById(producer.getId());
         save(producer);
     }
