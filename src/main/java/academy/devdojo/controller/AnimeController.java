@@ -6,6 +6,7 @@ import academy.devdojo.request.AnimePutRequest;
 import academy.devdojo.response.AnimeGetResponse;
 import academy.devdojo.response.AnimePostResponse;
 import academy.devdojo.service.AnimeService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +18,13 @@ import java.util.List;
 @RestController
 @RequestMapping({"v1/animes", "v1/animes/"})
 @Log4j2
+@RequiredArgsConstructor
 public class AnimeController {
 
     private static final AnimeMapper MAPPER = AnimeMapper.INSTANCE;
 
-    private AnimeService animeService;
+    private final AnimeService animeService;
 
-    public AnimeController() {
-        this.animeService = new AnimeService();
-    }
 
     @GetMapping
     public ResponseEntity<List<AnimeGetResponse>> list(@RequestParam(required = false) String name) {
