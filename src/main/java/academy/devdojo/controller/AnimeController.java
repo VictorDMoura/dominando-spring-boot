@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnimeController {
 
-    private static final AnimeMapper MAPPER = AnimeMapper.INSTANCE;
+    private final AnimeMapper mapper;
 
     private final AnimeService animeService;
 
@@ -30,7 +30,7 @@ public class AnimeController {
     public ResponseEntity<List<AnimeGetResponse>> list(@RequestParam(required = false) String name) {
         log.info("Request received to list all animes, param name '{}'", name);
         var animes = animeService.findAll(name);
-        List<AnimeGetResponse> response = MAPPER.toAnimeGetResponseList(animes);
+        List<AnimeGetResponse> response = mapper.toAnimeGetResponseList(animes);
         return ResponseEntity.ok(response);
     }
 
@@ -39,15 +39,15 @@ public class AnimeController {
         log.info("Request received findById: " + id);
         var animeFound = animeService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Anime not found"));
-        return ResponseEntity.ok(MAPPER.toAnimeGetResponse(animeFound));
+        return ResponseEntity.ok(mapper.toAnimeGetResponse(animeFound));
     }
 
     @PostMapping
     public ResponseEntity<AnimePostResponse> save(@RequestBody AnimePostRequest request) {
         log.info("Request received save: " + request);
-        var anime = MAPPER.toAnime(request);
+        var anime = mapper.toAnime(request);
         anime = animeService.save(anime);
-        var response = MAPPER.toAnimePostResponse(anime);
+        var response = mapper.toAnimePostResponse(anime);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -61,7 +61,7 @@ public class AnimeController {
     @PutMapping
     public ResponseEntity<Void> replace(@RequestBody AnimePutRequest request) {
         log.info("Request received to update anime with '{}'", request);
-        var anime = MAPPER.toAnime(request);
+        var anime = mapper.toAnime(request);
         animeService.update(anime);
         return ResponseEntity.noContent().build();
 

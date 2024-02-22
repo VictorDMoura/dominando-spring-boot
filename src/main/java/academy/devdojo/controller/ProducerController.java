@@ -22,8 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProducerController {
 
-    private static final ProducerMapper MAPPER = ProducerMapper.INSTANCE;
-
+    private final ProducerMapper mapper;
     private final ProducerService producerService;
 
 
@@ -31,7 +30,7 @@ public class ProducerController {
     public ResponseEntity<List<ProducerGetResponse>> list(@RequestParam(required = false) String name) {
         log.info("Request received to list all producers, param name '{}'", name);
         var producers = producerService.findAll(name);
-        List<ProducerGetResponse> response = MAPPER.toProducerGetResponseList(producers);
+        List<ProducerGetResponse> response = mapper.toProducerGetResponseList(producers);
         return ResponseEntity.ok(response);
 
     }
@@ -40,9 +39,9 @@ public class ProducerController {
             headers = "X-API-VERSION=v1")
     public ResponseEntity<ProducerPostResponse> save(@RequestBody ProducerPostRequest request) {
 
-        Producer producer = MAPPER.toProducer(request);
+        Producer producer = mapper.toProducer(request);
         producer = producerService.save(producer);
-        ProducerPostResponse response = MAPPER.toProducerPostResponse(producer);
+        ProducerPostResponse response = mapper.toProducerPostResponse(producer);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -57,7 +56,7 @@ public class ProducerController {
     public ResponseEntity<Void> update(@RequestBody ProducerPutRequest request) {
         log.info("Request received to update producer with '{}'", request);
 
-        Producer producerToUpdated = MAPPER.toProducer(request);
+        Producer producerToUpdated = mapper.toProducer(request);
         producerService.update(producerToUpdated);
         return ResponseEntity.noContent().build();
 
