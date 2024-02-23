@@ -17,42 +17,34 @@ import java.util.Optional;
 @Log4j2
 public class ProducerHardCodedRepository {
 
-    private static final List<Producer> PRODUCERS = new ArrayList<>();
+    private final ProducerData producerData;
     @Qualifier(value = "mongoDb")
     private final Connection connection;
 
-    static {
-        var mappa = Producer.builder().id(1L).name("Mappa").createdAt(LocalDateTime.now()).build();
-        var kyotoAnimatio = Producer.builder().id(2L).name("Kyoto Animation").createdAt(LocalDateTime.now()).build();
-        var madhouse = Producer.builder().id(3L).name("Madhouse").createdAt(LocalDateTime.now()).build();
-
-        PRODUCERS.addAll(List.of(mappa, kyotoAnimatio, madhouse));
-    }
-
     public List<Producer> findAll() {
-        return PRODUCERS;
+        return producerData.getProducers();
     }
 
     public Optional<Producer> findById(Long id) {
-        return PRODUCERS.stream().filter(p -> p.getId().equals(id)).findFirst();
+        return producerData.getProducers().stream().filter(p -> p.getId().equals(id)).findFirst();
     }
 
     public List<Producer> findByName(String name) {
         log.info(connection);
         return name == null ? findAll() :
-                PRODUCERS
+                producerData.getProducers()
                         .stream()
                         .filter(p -> p.getName().equalsIgnoreCase(name))
                         .toList();
     }
 
     public Producer save(Producer producer) {
-        PRODUCERS.add(producer);
+        producerData.getProducers().add(producer);
         return producer;
     }
 
     public void deleteById(Long id) {
-        PRODUCERS.removeIf(p -> p.getId().equals(id));
+        producerData.getProducers().removeIf(p -> p.getId().equals(id));
     }
 
     public void update(Producer producer) {
