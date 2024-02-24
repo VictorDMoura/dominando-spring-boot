@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,12 +25,12 @@ class ProducerHardCodedRepositoryTest {
     private List<Producer> producers;
 
     @BeforeEach
-    void init(){
+    void init() {
         var ufotable = Producer.builder().id(1L).name("Ufotable").createdAt(LocalDateTime.now()).build();
         var witStudio = Producer.builder().id(2L).name("Wit Studio").createdAt(LocalDateTime.now()).build();
         var studioGhibli = Producer.builder().id(3L).name("Studio Ghibli").createdAt(LocalDateTime.now()).build();
 
-        producers = List.of(ufotable, witStudio, studioGhibli);
+        producers = new ArrayList<>(List.of(ufotable, witStudio, studioGhibli));
         BDDMockito.when(producerData.getProducers()).thenReturn(producers);
     }
 
@@ -75,6 +76,52 @@ class ProducerHardCodedRepositoryTest {
     void findByName_ReturnsEmptyList_WhenNoProducerIsFound() {
         var producers = repository.findByName("xxxx");
         Assertions.assertThat(producers).isNotNull().isEmpty();
+
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("save() create a producer when successful")
+    void save_CreatesProducer_WhenSuccessful() {
+        var producerSaved = Producer.builder()
+                .id(99L).name("MAPPA")
+                .createdAt(LocalDateTime.now())
+                .build();
+        var producer = repository.save(producerSaved);
+
+        Assertions.assertThat(producer)
+                .isEqualTo(producerSaved)
+                .hasNoNullFieldsOrProperties();
+
+        var producers = repository.findAll();
+        Assertions.assertThat(producers).contains(producerSaved);
+
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("deleteById() remove a producer when successful")
+    void deleteById_RemovesProducer_WhenSuccessful() {
+        var producerDeleted = this.producers.get(0);
+        repository.deleteById(producerDeleted.getId());
+
+        Assertions.assertThat(repository.findAll()).doesNotContain(producerDeleted);
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("update() update a producer when successful")
+    void update_UpdateProducer_WhenSuccessful() {
+        var producerUpdate = this.producers.get(0);
+        producerUpdate.setName("Aniplex");
+
+        repository.update(producerUpdate);
+
+        Assertions.assertThat(this.producers).contains(producerUpdate);
+        this.producers.stream()
+                .filter(producer -> producer.getId().equals(producerUpdate.getId()))
+                .findFirst()
+                .ifPresent(producer -> Assertions.assertThat(producer.getName()).isEqualTo(producerUpdate.getName()));
 
     }
 }
