@@ -3,14 +3,18 @@ package academy.devdojo.controller;
 
 import academy.devdojo.domain.Producer;
 import academy.devdojo.repository.ProducerData;
+import academy.devdojo.repository.ProducerHardCodedRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -30,6 +34,8 @@ class ProducerControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private ProducerData producerData;
+    @SpyBean
+    private ProducerHardCodedRepository repository;
     private List<Producer> producers;
 
     @Autowired
@@ -73,6 +79,28 @@ class ProducerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/producers").param("name", "xxx"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
+    @Test
+    @DisplayName("save() returns status code 201 when successful")
+    void save_ReturnsStatusCode201_WhenSuccessful() throws Exception {
+        var request = readResourceFile("post-request-producer-200.json");
+        var response = readResourceFile("post-response-producer-201.json");
+        var producerToBeSaved = Producer.builder()
+                .id(99L).name("MAPPA")
+                .createdAt(LocalDateTime.now())
+                .build();
+        BDDMockito.when(repository.save(ArgumentMatchers.any())).thenReturn(producerToBeSaved);
+
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/producers")
+                        .contentType("application/json")
+                        .content(request)
+                        .header("X-API-VERSION", "v1"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
