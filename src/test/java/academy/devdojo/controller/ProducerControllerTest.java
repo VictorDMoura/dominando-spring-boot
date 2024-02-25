@@ -10,11 +10,13 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,9 @@ class ProducerControllerTest {
     private ProducerData producerData;
     private List<Producer> producers;
 
+    @Autowired
+    private ResourceLoader resourceLoader;
+
     @BeforeEach
     void init() {
         var ufotable = Producer.builder().id(1L).name("Ufotable").createdAt(LocalDateTime.now()).build();
@@ -42,12 +47,40 @@ class ProducerControllerTest {
 
 
     @Test
-    @DisplayName("List returns status code 200 when successful")
+    @DisplayName("findAll() returns a list and when name is null status code 200 when successful")
     void list_ReturnsStatusCode200_WhenSuccessful() throws Exception {
+        var response = readResourceFile("get-producer-null-name-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/producers"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect()
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
+    @Test
+    @DisplayName("findAll() returns a list and when find producer status code 200 when successful")
+    void list_ReturnsStatusCode200_WhenSuccessfulFindProducer() throws Exception {
+        var response = readResourceFile("get-producer-Ufotable-name-200.json");
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/producers").param("name", "Ufotable"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
+    @Test
+    @DisplayName("findAll() return a empty list when name not found and status code 200")
+    void list_ReturnsEmptyList_WhenNameNotFound() throws Exception {
+        var response = readResourceFile("get-producer-not-found-name-200.json");
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/producers").param("name", "xxx"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
+    private String readResourceFile(String fileName) throws Exception {
+        var file = resourceLoader.getResource("classpath:%s".formatted(fileName))
+                .getFile();
+
+        return new String(Files.readAllBytes(file.toPath()));
     }
 
 }
