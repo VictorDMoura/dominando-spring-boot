@@ -36,7 +36,6 @@ class ProducerControllerTest {
     private ProducerData producerData;
     @SpyBean
     private ProducerHardCodedRepository repository;
-    private List<Producer> producers;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -47,7 +46,7 @@ class ProducerControllerTest {
         var witStudio = Producer.builder().id(2L).name("Wit Studio").createdAt(LocalDateTime.now()).build();
         var studioGhibli = Producer.builder().id(3L).name("Studio Ghibli").createdAt(LocalDateTime.now()).build();
 
-        producers = new ArrayList<>(List.of(ufotable, witStudio, studioGhibli));
+        List<Producer> producers = new ArrayList<>(List.of(ufotable, witStudio, studioGhibli));
         BDDMockito.when(producerData.getProducers()).thenReturn(producers);
     }
 
@@ -103,6 +102,51 @@ class ProducerControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().json(response));
     }
+
+    @Test
+    @DisplayName("update() returns status code 204 when successful")
+    void deleteById_ReturnsStatusCode204_WhenSuccessful() throws Exception {
+        var request = readResourceFile("put-request-producer-200.json");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/producers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("update() throws exception when no producer is found")
+    void update_ThrowsException_WhenProducerNotFound() throws Exception {
+        var request = readResourceFile("put-request-producer-404.json");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/producers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.status().reason("Producer not found to be updated"));
+    }
+
+    @Test
+    @DisplayName("deleteById() returns status code 204 when successful")
+    void update_ReturnsStatusCode204_WhenSuccessful() throws Exception {
+        var id = 1L;
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/producers/{id}", id))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("deleteById() throws exception when no producer is found")
+    void deleteById_ThrowsException_WhenProducerNotFound() throws Exception {
+        var id = 99L;
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/producers/{id}", id))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.status().reason("Producer not found to be deleted"));
+    }
+
 
     private String readResourceFile(String fileName) throws Exception {
         var file = resourceLoader.getResource("classpath:%s".formatted(fileName))
