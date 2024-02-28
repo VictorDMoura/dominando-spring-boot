@@ -78,6 +78,45 @@ class AnimeControllerTest {
                 .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
+    @Test
+    @DisplayName("findById() returns a anime when successful")
+    void findById_ReturnsAnime_WhenSuccessful() throws Exception {
+        var validId = 1L;
+        var response = readResourceFile("get-anime-1-id-200.json");
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/animes/{id}", validId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
+    @Test
+    @DisplayName("findById() returns a exception when anime not found")
+    void findById_ReturnsException_WhenAnimeNotFound() throws Exception {
+        var invalidId = 99L;
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/animes/{id}", invalidId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("save() returns status code 201 when successful")
+    void save_ReturnsStatusCode201_WhenSuccessful() throws Exception {
+        var request = readResourceFile("post-request-anime-200.json");
+        var response = readResourceFile("post-response-anime-201.json");
+        var animeToBeSaved = Anime.builder()
+                .id(99L).name("Bleach")
+                .createdAt(LocalDateTime.now())
+                .build();
+        BDDMockito.when(repository.save(BDDMockito.any())).thenReturn(animeToBeSaved);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/animes")
+                .contentType("application/json")
+                .content(request))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
     private String readResourceFile(String fileName) throws IOException {
         var file = resourceLoader.getResource("classpath:%s".formatted(fileName))
                 .getFile();
