@@ -1,10 +1,16 @@
 package academy.devdojo.service;
 
 
+import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.domain.Anime;
 import academy.devdojo.repository.AnimeHardCodedRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
@@ -12,8 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,16 +29,14 @@ class AnimeServiceTest {
     private AnimeService service;
     @Mock
     private AnimeHardCodedRepository repository;
+    @InjectMocks
+    private AnimeUtils animeUtils;
 
     private List<Anime> animes;
 
     @BeforeEach
     void init() {
-        var naruto = Anime.builder().id(1L).name("Naruto").build();
-        var dragonBall = Anime.builder().id(2L).name("Dragon Ball").build();
-        var bleach = Anime.builder().id(3L).name("Bleach").build();
-
-        animes = new ArrayList<>(List.of(naruto, dragonBall, bleach));
+        animes = animeUtils.newAnimeList();
     }
 
     @Test
@@ -52,7 +54,7 @@ class AnimeServiceTest {
     @Order(2)
     @DisplayName("findAll() should returns a list with found anime when name is not null")
     void findAll_ReturnsAllAnimes_WhenNameIsNotNull() {
-        var name = "Naruto";
+        var name = "One Piece";
         var animeToFound = this.animes.stream()
                 .filter(anime -> anime.getName().equals(name))
                 .toList();
@@ -107,11 +109,7 @@ class AnimeServiceTest {
     @Order(6)
     @DisplayName("save() should return a anime when successful")
     void save_ReturnsAnime_WhenSuccessful() {
-        var animeToSave = Anime.builder()
-                .id(4L)
-                .name("Naruto")
-                .createdAt(LocalDateTime.now())
-                .build();
+        var animeToSave = animeUtils.newAnimeToSave();
 
         BDDMockito.when(repository.save(animeToSave)).thenReturn(animeToSave);
 

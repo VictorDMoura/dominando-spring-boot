@@ -1,6 +1,7 @@
 package academy.devdojo.repository;
 
 
+import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.domain.Anime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,13 +27,14 @@ class AnimeHardCodedRepositoryTest {
 
     private List<Anime> animes;
 
+    @InjectMocks
+    private AnimeUtils animeUtils;
+
     @BeforeEach
     void init() {
-        var onePunchMan = Anime.builder().id(1L).name("One Punch Man").createdAt(LocalDateTime.now()).build();
-        var onePiece = Anime.builder().id(2L).name("One Piece").createdAt(LocalDateTime.now()).build();
-        var demonSlayer = Anime.builder().id(3L).name("Demon Slayer").createdAt(LocalDateTime.now()).build();
 
-        animes = new ArrayList<>(List.of(onePunchMan, onePiece, demonSlayer));
+
+        animes = animeUtils.newAnimeList();
 
         BDDMockito.when(animeData.getAnimes()).thenReturn(animes);
     }
@@ -69,7 +70,7 @@ class AnimeHardCodedRepositoryTest {
     @Test
     @DisplayName("findByName() returns list of a anime when successful")
     void findByName_ReturnsListOfAnime_WhenSuccessful() {
-        var animes = repository.findByName("One Punch Man");
+        var animes = repository.findByName("One Piece");
 
         Assertions.assertThat(animes)
                 .isNotNull()
@@ -98,7 +99,7 @@ class AnimeHardCodedRepositoryTest {
     @Test
     @DisplayName("save() returns anime when successful")
     void save_ReturnsAnime_WhenSuccessful() {
-        var animeToSave = Anime.builder().id(4L).name("Naruto").createdAt(LocalDateTime.now()).build();
+        var animeToSave = animeUtils.newAnimeToSave();
 
         var savedAnime = repository.save(animeToSave);
 
