@@ -54,7 +54,7 @@ class ProducerControllerTest {
     @Test
     @DisplayName("findAll() returns a list and when name is null status code 200 when successful")
     void list_ReturnsStatusCode200_WhenSuccessful() throws Exception {
-        var response = readResourceFile("get-producer-null-name-200.json");
+        var response = readResourceFile("producer/get-producer-null-name-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/producers"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -64,7 +64,7 @@ class ProducerControllerTest {
     @Test
     @DisplayName("findAll() returns a list and when find producer status code 200 when successful")
     void list_ReturnsStatusCode200_WhenSuccessfulFindProducer() throws Exception {
-        var response = readResourceFile("get-producer-Ufotable-name-200.json");
+        var response = readResourceFile("producer/get-producer-Ufotable-name-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/producers").param("name", "Ufotable"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -74,7 +74,7 @@ class ProducerControllerTest {
     @Test
     @DisplayName("findAll() return a empty list when name not found and status code 200")
     void list_ReturnsEmptyList_WhenNameNotFound() throws Exception {
-        var response = readResourceFile("get-producer-not-found-name-200.json");
+        var response = readResourceFile("producer/get-producer-not-found-name-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/producers").param("name", "xxx"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -84,8 +84,8 @@ class ProducerControllerTest {
     @Test
     @DisplayName("save() returns status code 201 when successful")
     void save_ReturnsStatusCode201_WhenSuccessful() throws Exception {
-        var request = readResourceFile("post-request-producer-200.json");
-        var response = readResourceFile("post-response-producer-201.json");
+        var request = readResourceFile("producer/post-request-producer-200.json");
+        var response = readResourceFile("producer/post-response-producer-201.json");
         var producerToBeSaved = Producer.builder()
                 .id(99L).name("MAPPA")
                 .createdAt(LocalDateTime.now())
@@ -106,7 +106,7 @@ class ProducerControllerTest {
     @Test
     @DisplayName("update() returns status code 204 when successful")
     void deleteById_ReturnsStatusCode204_WhenSuccessful() throws Exception {
-        var request = readResourceFile("put-request-producer-200.json");
+        var request = readResourceFile("producer/put-request-producer-200.json");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/v1/producers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +118,7 @@ class ProducerControllerTest {
     @Test
     @DisplayName("update() throws exception when no producer is found")
     void update_ThrowsException_WhenProducerNotFound() throws Exception {
-        var request = readResourceFile("put-request-producer-404.json");
+        var request = readResourceFile("producer/put-request-producer-404.json");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/v1/producers")
                         .contentType(MediaType.APPLICATION_JSON)

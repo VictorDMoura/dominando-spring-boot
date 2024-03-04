@@ -50,7 +50,7 @@ class AnimeControllerTest {
     @Test
     @DisplayName("list() returns a list and when name is null status code 200 when successful")
     void list_ReturnsStatusCode200_WhenSuccessful() throws Exception {
-        var response = readResourceFile("get-anime-null-name-200.json");
+        var response = readResourceFile("anime/get-anime-null-name-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/animes"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -61,7 +61,7 @@ class AnimeControllerTest {
     @Test
     @DisplayName("findAll() returns a list and when find anime status code 200 when successful")
     void findById_ReturnsStatusCode200_WhenSuccessful() throws Exception {
-        var response = readResourceFile("get-anime-OnePiece-name-200.json");
+        var response = readResourceFile("anime/get-anime-OnePiece-name-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/animes").param("name", "One Piece"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -71,7 +71,7 @@ class AnimeControllerTest {
     @Test
     @DisplayName("findAll() return a empty list when name not found and status code 200")
     void list_ReturnsEmptyList_WhenNameNotFound() throws Exception {
-        var response = readResourceFile("get-anime-not-found-name-200.json");
+        var response = readResourceFile("anime/get-anime-not-found-name-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/animes").param("name", "NotFound"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -82,7 +82,7 @@ class AnimeControllerTest {
     @DisplayName("findById() returns a anime when successful")
     void findById_ReturnsAnime_WhenSuccessful() throws Exception {
         var validId = 1L;
-        var response = readResourceFile("get-anime-1-id-200.json");
+        var response = readResourceFile("anime/get-anime-1-id-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/animes/{id}", validId))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -101,8 +101,8 @@ class AnimeControllerTest {
     @Test
     @DisplayName("save() returns status code 201 when successful")
     void save_ReturnsStatusCode201_WhenSuccessful() throws Exception {
-        var request = readResourceFile("post-request-anime-200.json");
-        var response = readResourceFile("post-response-anime-201.json");
+        var request = readResourceFile("anime/post-request-anime-200.json");
+        var response = readResourceFile("anime/post-response-anime-201.json");
         var animeToBeSaved = Anime.builder()
                 .id(99L).name("Bleach")
                 .createdAt(LocalDateTime.now())
@@ -120,7 +120,7 @@ class AnimeControllerTest {
     @Test
     @DisplayName("replace() returns status code 204 when successful")
     void replace_ReturnsStatusCode204_WhenSuccessful() throws Exception {
-        var request = readResourceFile("put-request-anime-200.json");
+        var request = readResourceFile("anime/put-request-anime-200.json");
         mockMvc.perform(MockMvcRequestBuilders.put("/v1/animes")
                         .contentType("application/json")
                         .content(request))
@@ -131,7 +131,7 @@ class AnimeControllerTest {
     @Test
     @DisplayName("replace() throws exception when no anime is found")
     void replace_ThrowsException_WhenAnimeNotFound() throws Exception {
-        var request = readResourceFile("put-request-anime-404.json");
+        var request = readResourceFile("anime/put-request-anime-404.json");
         mockMvc.perform(MockMvcRequestBuilders.put("/v1/animes")
                         .contentType("application/json")
                         .content(request))
