@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import test.outside.Connection;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +16,7 @@ import java.util.Optional;
 public class ProducerHardCodedRepository {
 
     private final ProducerData producerData;
-    @Qualifier(value = "mongoDb")
+    @Qualifier(value = "connectionMySql")
     private final Connection connection;
 
     public List<Producer> findAll() {
