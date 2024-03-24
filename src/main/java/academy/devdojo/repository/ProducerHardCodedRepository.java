@@ -16,7 +16,7 @@ import java.util.Optional;
 public class ProducerHardCodedRepository {
 
     private final ProducerData producerData;
-    @Qualifier(value = "mongoDb")
+    @Qualifier(value = "connectionMySql")
     private final Connection connection;
 
     public List<Producer> findAll() {
