@@ -3,6 +3,7 @@ package academy.devdojo.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import test.outside.Connection;
 
 @Configuration
@@ -19,11 +20,13 @@ public class BeanConfig {
 
     @Bean
 //    @Primary
+    @Profile("mysql")
     public Connection connectionMySql(){
         return new Connection(url, username, password);
     }
 
     @Bean(name = "mongoDb")
+    @Profile("mongo")
     public Connection connectionMongoDb(){
         return new Connection("localhost", "mongodb", "xxxxx");
     }
