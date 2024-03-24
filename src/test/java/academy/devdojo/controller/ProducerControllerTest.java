@@ -3,7 +3,6 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.ProducerUtils;
-import academy.devdojo.domain.Producer;
 import academy.devdojo.repository.ProducerData;
 import academy.devdojo.repository.ProducerHardCodedRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,11 +20,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDateTime;
-
 //@SpringBootTest
 //@AutoConfigureMockMvc
 @WebMvcTest(ProducerController.class)
+//@ActiveProfiles("test")
 class ProducerControllerTest {
 
     @Autowired
