@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = {"v1/animes", "v1/animes/"})
+@RequestMapping(path = {"v1/animes", "v1/animes/"})
 public class AnimeController {
 
 
