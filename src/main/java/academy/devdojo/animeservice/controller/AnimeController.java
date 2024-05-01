@@ -13,12 +13,8 @@ public class AnimeController {
 
 
     @GetMapping
-    public List<String> listAll(){
-        return animesList();
-    }
-
-    private static List<String> animesList() {
-        return List.of("Dragon ball", "Naruto", "One Piece");
+    public List<String> list(){
+        return List.of("Hell's Paradise (Jigokuraku)", "Dr.Stone", "Konosuba");
     }
 
 
