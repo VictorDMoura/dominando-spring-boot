@@ -1,7 +1,9 @@
 package academy.devdojo.animeservice.controller;
 
 import academy.devdojo.animeservice.domain.Producer;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +16,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ProducerController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE,
-    headers = "x-api-version=v1")
-    public Producer save(@RequestBody Producer producer) {
+            headers = "x-api-version=v1")
+    public ResponseEntity<Producer> save(@RequestBody Producer producer) {
         producer.setId(ThreadLocalRandom.current().nextLong());
         Producer.getProducers().add(producer);
-        return producer;
+        return ResponseEntity.status(HttpStatus.CREATED).body(producer);
     }
 }
