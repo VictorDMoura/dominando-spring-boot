@@ -1,16 +1,16 @@
 package academy.devdojo.animeservice.domain;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Getter
 @Setter
+@AllArgsConstructor
+@ToString
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Producer {
