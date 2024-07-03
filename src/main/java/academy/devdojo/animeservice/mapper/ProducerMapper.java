@@ -2,12 +2,14 @@ package academy.devdojo.animeservice.mapper;
 
 import academy.devdojo.animeservice.domain.Producer;
 import academy.devdojo.animeservice.request.ProducerPostRequest;
+import academy.devdojo.animeservice.request.ProducerPutRequest;
 import academy.devdojo.animeservice.response.ProducerGetResponse;
 import academy.devdojo.animeservice.response.ProducerPostResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -24,4 +26,7 @@ public interface ProducerMapper {
     ProducerGetResponse toProducerGetResponse(Producer producer);
 
     List<ProducerGetResponse> toProducerGetResponses(List<Producer> producers);
+
+    @Mapping(source = "createdAt", target = "createdAt")
+    Producer toProducer(ProducerPutRequest request, LocalDateTime createdAt);
 }

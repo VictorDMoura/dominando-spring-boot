@@ -3,6 +3,7 @@ package academy.devdojo.animeservice.controller;
 import academy.devdojo.animeservice.domain.Producer;
 import academy.devdojo.animeservice.mapper.ProducerMapper;
 import academy.devdojo.animeservice.request.ProducerPostRequest;
+import academy.devdojo.animeservice.request.ProducerPutRequest;
 import academy.devdojo.animeservice.response.ProducerGetResponse;
 import academy.devdojo.animeservice.response.ProducerPostResponse;
 import lombok.extern.log4j.Log4j2;
@@ -65,6 +66,22 @@ public class ProducerController {
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producer not found"));
         Producer.getProducers().remove(producerToDelete);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> update(@RequestBody ProducerPutRequest request) {
+        log.info("Request received to update the producer '{}'", request);
+
+        var producerToRemove = Producer.getProducers().stream()
+                .filter(producer -> producer.getId().equals(request.getId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producer not found"));
+
+        var producerUpdated = MAPPER.toProducer(request, producerToRemove.getCreatedAt());
+        Producer.getProducers().remove(producerToRemove);
+        Producer.getProducers().add(producerUpdated);
 
         return ResponseEntity.noContent().build();
     }
