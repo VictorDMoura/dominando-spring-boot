@@ -23,23 +23,26 @@ public class ProducerHardCodedRepository {
     }
 
     public List<Producer> findByName(String name) {
-        return PRODUCERS.stream().filter(producer -> producer.getName().equalsIgnoreCase(name)).toList();
+        return name == null ? PRODUCERS :
+                PRODUCERS.stream()
+                        .filter(producer -> producer.getName().equalsIgnoreCase(name))
+                        .toList();
     }
 
     public Optional<Producer> findById(Long id) {
         return PRODUCERS.stream().filter(producer -> producer.getId().equals(id)).findFirst();
     }
 
-    public Producer save(Producer producer){
+    public Producer save(Producer producer) {
         PRODUCERS.add(producer);
         return producer;
     }
 
-    public void delete(Producer producer){
+    public void delete(Producer producer) {
         PRODUCERS.remove(producer);
     }
 
-    public void update(Producer producer){
+    public void update(Producer producer) {
         delete(producer);
         save(producer);
     }
