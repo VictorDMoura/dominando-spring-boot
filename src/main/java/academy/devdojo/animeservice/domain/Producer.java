@@ -3,8 +3,6 @@ package academy.devdojo.animeservice.domain;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Getter

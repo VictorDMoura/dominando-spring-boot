@@ -9,7 +9,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -27,6 +26,5 @@ public interface ProducerMapper {
 
     List<ProducerGetResponse> toProducerGetResponses(List<Producer> producers);
 
-    @Mapping(source = "createdAt", target = "createdAt")
-    Producer toProducer(ProducerPutRequest request, LocalDateTime createdAt);
+    Producer toProducer(ProducerPutRequest request);
 }
