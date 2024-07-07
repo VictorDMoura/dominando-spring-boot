@@ -7,6 +7,7 @@ import academy.devdojo.animeservice.request.ProducerPutRequest;
 import academy.devdojo.animeservice.response.ProducerGetResponse;
 import academy.devdojo.animeservice.response.ProducerPostResponse;
 import academy.devdojo.animeservice.service.ProducerService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,14 +20,11 @@ import java.util.List;
 @RestController
 @RequestMapping({"v1/producers", "v1/producers/"})
 @Log4j2
+@RequiredArgsConstructor
 public class ProducerController {
 
     private static final ProducerMapper MAPPER = ProducerMapper.INSTANCE;
-    private ProducerService producerService;
-
-    public ProducerController() {
-        this.producerService = new ProducerService();
-    }
+    private final ProducerService producerService;
 
 
     @GetMapping

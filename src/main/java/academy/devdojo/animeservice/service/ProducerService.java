@@ -2,19 +2,20 @@ package academy.devdojo.animeservice.service;
 
 import academy.devdojo.animeservice.domain.Producer;
 import academy.devdojo.animeservice.repository.ProducerHardCodedRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class ProducerService {
 
-    private ProducerHardCodedRepository repository;
+    private final ProducerHardCodedRepository repository;
 
-    public ProducerService() {
-        this.repository = new ProducerHardCodedRepository();
-    }
 
     public List<Producer> listAll(String name) {
         return repository.findByName(name);
