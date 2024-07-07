@@ -1,6 +1,5 @@
 package academy.devdojo.animeservice.controller;
 
-import academy.devdojo.animeservice.domain.Producer;
 import academy.devdojo.animeservice.mapper.ProducerMapper;
 import academy.devdojo.animeservice.request.ProducerPostRequest;
 import academy.devdojo.animeservice.request.ProducerPutRequest;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProducerController {
 
-    private static final ProducerMapper MAPPER = ProducerMapper.INSTANCE;
+    private final ProducerMapper mapper;
     private final ProducerService producerService;
 
 
@@ -32,7 +30,7 @@ public class ProducerController {
         log.info("Request received to list all producers, param name '{}'", name);
         var producers = producerService.listAll(name);
 
-        var response = MAPPER.toProducerGetResponses(producers);
+        var response = mapper.toProducerGetResponses(producers);
 
         return ResponseEntity.ok(response);
     }
@@ -42,9 +40,9 @@ public class ProducerController {
             headers = "x-api-version=v1")
     public ResponseEntity<ProducerPostResponse> save(@RequestBody ProducerPostRequest request) {
 
-        var producer = MAPPER.toProducer(request);
+        var producer = mapper.toProducer(request);
         producer = producerService.save(producer);
-        var response = MAPPER.toProducerPostResponse(producer);
+        var response = mapper.toProducerPostResponse(producer);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -62,7 +60,7 @@ public class ProducerController {
     public ResponseEntity<Void> update(@RequestBody ProducerPutRequest request) {
         log.info("Request received to update the producer '{}'", request);
 
-        var producerUpdated = MAPPER.toProducer(request);
+        var producerUpdated = mapper.toProducer(request);
 
         producerService.update(producerUpdated);
 
