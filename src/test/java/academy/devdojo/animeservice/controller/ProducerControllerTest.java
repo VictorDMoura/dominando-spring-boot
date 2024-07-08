@@ -2,7 +2,6 @@ package academy.devdojo.animeservice.controller;
 
 import academy.devdojo.animeservice.commons.FileUtils;
 import academy.devdojo.animeservice.commons.ProducerUtils;
-import academy.devdojo.animeservice.domain.Producer;
 import academy.devdojo.animeservice.repository.ProducerData;
 import academy.devdojo.animeservice.repository.ProducerHardCodedRepository;
 import org.junit.jupiter.api.*;
@@ -17,8 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import java.time.LocalDateTime;
 
 @WebMvcTest(ProducerController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
