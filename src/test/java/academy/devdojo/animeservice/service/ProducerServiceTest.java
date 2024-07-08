@@ -37,9 +37,9 @@ class ProducerServiceTest {
     @Order(1)
     @DisplayName("findAll() returns a list with all producers")
     void findAll_ReturnsAllProducers_WhenSuccessful() {
-        BDDMockito.when(repository.findByName(null)).thenReturn(producers);
+        BDDMockito.when(repository.findByName(null)).thenReturn(this.producers);
         var producers = service.listAll(null);
-        Assertions.assertThat(producers).hasSameElementsAs(producers);
+        Assertions.assertThat(producers).hasSameElementsAs(this.producers);
     }
 
     @Test
