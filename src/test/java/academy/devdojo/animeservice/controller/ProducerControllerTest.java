@@ -112,6 +112,56 @@ class ProducerControllerTest {
                 .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
+    @Test
+    @DisplayName("update() update a producer")
+    @Order(5)
+    void update_UpdateProducer_WhenSuccessful() throws Exception {
+        var request = readResourceFile("put-request-producer-200.json");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/v1/producers")
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("update() throw ResponseStatusException when no producer is found")
+    @Order(6)
+    void update_ThrowsResponseStatusException_WhenNoProducerIsFound() throws Exception {
+        var request = readResourceFile("put-request-producer-404.json");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/v1/producers")
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.status().reason("Producer not found to be updated"));
+    }
+
+    @Test
+    @DisplayName("delete() removes a producer")
+    @Order(7)
+    void delete_RemovesProducer_WhenSuccessful() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/producers/{id}", 1L))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("delete() throw ResponseStatusException when no producer is found")
+    @Order(8)
+    void delete_ThrowsResponseStatusException_WhenNoProducerIsFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/producers/{id}", 1111L))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.status().reason("Producer not found to be deleted"));
+    }
+
     private String readResourceFile(String filename) throws Exception {
         var file = resourceLoader.getResource("classpath:%s".formatted(filename)).getFile();
         return new String(Files.readAllBytes(file.toPath()));
