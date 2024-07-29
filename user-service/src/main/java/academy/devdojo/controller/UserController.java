@@ -1,4 +1,4 @@
-package academy.devdojo.Controller;
+package academy.devdojo.controller;
 
 
 import academy.devdojo.mapper.UserMapper;
