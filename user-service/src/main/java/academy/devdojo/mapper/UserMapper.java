@@ -4,6 +4,7 @@ package academy.devdojo.mapper;
 import academy.devdojo.domain.User;
 import academy.devdojo.request.UserPostRequest;
 import academy.devdojo.response.UserGetResponse;
+import academy.devdojo.response.UserPostResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -19,4 +20,6 @@ public interface UserMapper {
     UserGetResponse toUserGetResponse(User user);
 
     List<UserGetResponse> toUserGetResponses(List<User> users);
+
+    UserPostResponse toUserPostResponse(User user);
 }

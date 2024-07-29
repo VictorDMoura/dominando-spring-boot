@@ -48,5 +48,20 @@ class UserHardCodedRepositoryTest {
         Assertions.assertThat(userOptional).isPresent().contains(users.get(2));
     }
 
+    @Test
+    @DisplayName("save() creates a user")
+    @Order(3)
+    void save_CreatesUser_WhenSuccessful() {
+        var userToSave = userUtils.newUserToSave();
+        var user = repository.save(userToSave);
+
+        Assertions.assertThat(user)
+                .isEqualTo(userToSave)
+                .hasNoNullFieldsOrProperties();
+
+        var users = repository.findAll();
+        Assertions.assertThat(users).contains(userToSave);
+    }
+
 
 }

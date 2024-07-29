@@ -20,4 +20,9 @@ public class UserHardCodedRepository {
     public Optional<User> findById(Long id) {
         return userData.getUsers().stream().filter(user -> user.getId().equals(id)).findFirst();
     }
+
+    public User save(User user) {
+        userData.getUsers().add(user);
+        return user;
+    }
 }
