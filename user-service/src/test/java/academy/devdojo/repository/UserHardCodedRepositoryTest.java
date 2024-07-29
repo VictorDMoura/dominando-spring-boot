@@ -40,5 +40,13 @@ class UserHardCodedRepositoryTest {
         Assertions.assertThat(users).hasSameElementsAs(this.users);
     }
 
+    @Test
+    @DisplayName("findById() returns an object with given id")
+    @Order(2)
+    void findById_ReturnsUser_WhenSuccessful() {
+        var userOptional = repository.findById(3L);
+        Assertions.assertThat(userOptional).isPresent().contains(users.get(2));
+    }
+
 
 }
