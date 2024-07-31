@@ -32,4 +32,14 @@ public class UserService {
         var user = findById(id);
         repository.delete(user);
     }
+
+    public void update(User userToUpdate) {
+        assertUserExists(userToUpdate);
+
+        repository.update(userToUpdate);
+    }
+
+    private void assertUserExists(User user) {
+        findById(user.getId());
+    }
 }

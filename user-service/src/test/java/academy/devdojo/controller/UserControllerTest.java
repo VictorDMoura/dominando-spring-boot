@@ -138,5 +138,41 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
+    @Test
+    @DisplayName("update() update an user")
+    @Order(7)
+    void update_UpdateUser_WhenSuccessful() throws Exception {
+        BDDMockito.doNothing().when(userService).update(ArgumentMatchers.any());
+
+        var request = fileUtils.readResourceFile("user/put-request-user-200.json");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("update() throw ResponseStatusException when no user is found")
+    @Order(8)
+    void update_ThrowsResponseStatusException_WhenNoUserIsFound() throws Exception {
+        var request = fileUtils.readResourceFile("user/put-request-user-404.json");
+        BDDMockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .when(userService)
+                .update(ArgumentMatchers.any());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+    }
+
 
 }

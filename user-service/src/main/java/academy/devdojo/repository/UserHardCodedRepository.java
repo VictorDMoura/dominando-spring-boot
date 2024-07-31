@@ -29,4 +29,9 @@ public class UserHardCodedRepository {
     public void delete(User user) {
         userData.getUsers().remove(user);
     }
+
+    public void update(User producer) {
+        delete(producer);
+        save(producer);
+    }
 }

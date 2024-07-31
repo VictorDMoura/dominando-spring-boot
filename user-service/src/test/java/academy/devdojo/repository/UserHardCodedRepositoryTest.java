@@ -73,5 +73,22 @@ class UserHardCodedRepositoryTest {
         Assertions.assertThat(this.users).doesNotContain(userToDelete);
     }
 
+    @Test
+    @DisplayName("update() update an User")
+    @Order(5)
+    void update_UpdateUser_WhenSuccessful() {
+        var userToUpdate = this.users.get(0);
+        userToUpdate.setFirstName("Astah");
+
+        repository.update(userToUpdate);
+
+        Assertions.assertThat(this.users).contains(userToUpdate);
+        this.users
+                .stream()
+                .filter(anime -> anime.getId().equals(userToUpdate.getId()))
+                .findFirst()
+                .ifPresent(u -> Assertions.assertThat(u.getFirstName()).isEqualTo(userToUpdate.getFirstName()));
+    }
+
 
 }
