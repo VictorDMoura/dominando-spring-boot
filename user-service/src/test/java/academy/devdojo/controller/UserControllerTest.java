@@ -26,8 +26,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @WebMvcTest(UserController.class)
@@ -44,6 +46,10 @@ class UserControllerTest {
     private UserUtils userUtils;
     @MockBean
     private UserService userService;
+
+    private static final String EMAIL = "email";
+    private static final String FIRST_NAME = "firstName";
+    private static final String LAST_NAME = "lastName";
 
     @Test
     @DisplayName("findAll() returns a list with all users")
@@ -184,10 +190,10 @@ class UserControllerTest {
     }
 
     @ParameterizedTest
-    @DisplayName("save() returns bad request when fields are empty")
+    @DisplayName("save() returns bad request when fields are invalid")
     @MethodSource("postUserBadRequestSource")
     @Order(9)
-    void save_ReturnsBadRequest_WhenFieldsAreEmpty(String fileName, List<String> errors) throws Exception {
+    void save_ReturnsBadRequest_WhenFieldsAreInvalid(String fileName, List<String> errors) throws Exception {
         var request = fileUtils.readResourceFile("user/%s".formatted(fileName));
 
         var mvcResult = mockMvc.perform(MockMvcRequestBuilders
@@ -205,18 +211,59 @@ class UserControllerTest {
         Assertions.assertThat(resolvedException.getMessage()).contains(errors);
     }
 
+    @ParameterizedTest
+    @DisplayName("update() returns bad request when fields are invalid")
+    @MethodSource("putUserBadRequestSource")
+    @Order(10)
+    void update_ReturnsBadRequest_WhenFieldsAreInvalid(String fileName, List<String> errors) throws Exception {
+        var request = fileUtils.readResourceFile("user/%s".formatted(fileName));
+
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                        .put(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+        var resolvedException = mvcResult.getResolvedException();
+
+        Assertions.assertThat(resolvedException).isNotNull();
+
+        Assertions.assertThat(resolvedException.getMessage()).contains(errors);
+    }
+
     private static Stream<Arguments> postUserBadRequestSource() {
-        var firstNameError = "The field 'firstName' is required";
-        var lastNameError = "The field 'lastName' is required";
-        var emailNameError = "The email format is not valid";
-        var allErrors = List.of(firstNameError, lastNameError, emailNameError);
-        var emailError = Collections.singletonList(emailNameError);
+        var errorsMap = allErrorsMap();
+        var emailError = Collections.singletonList(errorsMap.get(EMAIL));
+        var allErrors = new ArrayList<>(errorsMap.values());
 
         return Stream.of(
-                Arguments.of("post-request-user-blank-fields-400.json", allErrors),
+                Arguments.of("put-request-user-blank-fields-400.json", allErrors),
                 Arguments.of("post-request-user-empty-fields-400.json", allErrors),
                 Arguments.of("post-request-user-invalid-email-400.json", emailError)
         );
+    }
+
+    private static Stream<Arguments> putUserBadRequestSource() {
+        var errorsMap = allErrorsMap();
+        var emailError = Collections.singletonList(errorsMap.get(EMAIL));
+        var allErrors = new ArrayList<>(errorsMap.values());
+
+        return Stream.of(
+                Arguments.of("put-request-user-blank-fields-400.json", allErrors),
+                Arguments.of("put-request-user-empty-fields-400.json", allErrors),
+                Arguments.of("put-request-user-invalid-email-400.json", emailError)
+        );
+    }
+
+    private static Map<String, String> allErrorsMap() {
+        var firstNameError = "The field 'firstName' is required";
+        var lastNameError = "The field 'lastName' is required";
+        var emailError = "The email format is not valid";
+        return Map.of(
+                FIRST_NAME, firstNameError,
+                LAST_NAME, lastNameError,
+                EMAIL, emailError);
     }
 
 
