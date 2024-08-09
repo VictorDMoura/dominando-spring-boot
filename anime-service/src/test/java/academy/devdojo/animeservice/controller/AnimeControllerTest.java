@@ -2,8 +2,10 @@ package academy.devdojo.animeservice.controller;
 
 import academy.devdojo.animeservice.commons.AnimeUtils;
 import academy.devdojo.animeservice.commons.FileUtils;
+import academy.devdojo.animeservice.mapper.AnimeMapperImpl;
 import academy.devdojo.animeservice.repository.AnimeData;
 import academy.devdojo.animeservice.repository.AnimeHardCodedRepository;
+import academy.devdojo.animeservice.service.AnimeService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -28,6 +31,7 @@ import java.util.stream.Stream;
 
 @WebMvcTest(AnimeController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import({FileUtils.class, AnimeUtils.class, AnimeService.class, AnimeMapperImpl.class})
 class AnimeControllerTest {
 
     @Autowired

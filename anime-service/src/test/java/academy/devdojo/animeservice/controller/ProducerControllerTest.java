@@ -2,8 +2,11 @@ package academy.devdojo.animeservice.controller;
 
 import academy.devdojo.animeservice.commons.FileUtils;
 import academy.devdojo.animeservice.commons.ProducerUtils;
+import academy.devdojo.animeservice.config.BeanConfig;
+import academy.devdojo.animeservice.mapper.ProducerMapperImpl;
 import academy.devdojo.animeservice.repository.ProducerData;
 import academy.devdojo.animeservice.repository.ProducerHardCodedRepository;
+import academy.devdojo.animeservice.service.ProducerService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,6 +33,7 @@ import java.util.stream.Stream;
 @WebMvcTest(ProducerController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //@ActiveProfiles("test")
+@Import({FileUtils.class, ProducerUtils.class, ProducerService.class, ProducerMapperImpl.class,  BeanConfig.class})
 class ProducerControllerTest {
 
     @Autowired
