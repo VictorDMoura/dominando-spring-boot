@@ -4,7 +4,11 @@ import academy.devdojo.animeservice.commons.AnimeUtils;
 import academy.devdojo.animeservice.commons.FileUtils;
 import academy.devdojo.animeservice.repository.AnimeData;
 import academy.devdojo.animeservice.repository.AnimeHardCodedRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 @WebMvcTest(AnimeController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -31,7 +40,9 @@ class AnimeControllerTest {
     private AnimeData animeData;
     @SpyBean
     private AnimeHardCodedRepository repository;
+
     public static final String URL = "/v1/animes";
+    private static final String NAME = "name";
 
     @BeforeEach
     void init() {
@@ -175,6 +186,73 @@ class AnimeControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.status().reason("Anime not found"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("postAnimeBadRequestSource")
+    @DisplayName("save() returns bad request when fields are invalid")
+    @Order(11)
+    void save_ReturnsBadRequest_WhenFieldsAreInvalid(String fileName, List<String> errors) throws Exception {
+        var request = fileUtils.readResourceFile("anime/%s".formatted(fileName));
+
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                        .post(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+        var resolvedException = mvcResult.getResolvedException();
+
+        Assertions.assertThat(resolvedException).isNotNull();
+
+        Assertions.assertThat(resolvedException.getMessage()).contains(errors);
+    }
+
+    @ParameterizedTest
+    @MethodSource("putAnimeBadRequestSource")
+    @DisplayName("update() returns bad request when fields are invalid")
+    @Order(12)
+    void update_ReturnsBadRequest_WhenFieldsAreInvalid(String fileName, List<String> errors) throws Exception {
+        var request = fileUtils.readResourceFile("anime/%s".formatted(fileName));
+
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                        .put(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+        var resolvedException = mvcResult.getResolvedException();
+
+        Assertions.assertThat(resolvedException).isNotNull();
+
+        Assertions.assertThat(resolvedException.getMessage()).contains(errors);
+    }
+
+    private static Stream<Arguments> postAnimeBadRequestSource() {
+        var errorsMap = allErrorsMap();
+        var allErrors = new ArrayList<>(errorsMap.values());
+
+        return Stream.of(
+                Arguments.of("post-request-anime-blank-fields-400.json", allErrors),
+                Arguments.of("post-request-anime-empty-fields-400.json", allErrors));
+    }
+
+    private static Stream<Arguments> putAnimeBadRequestSource() {
+        var errorsMap = allErrorsMap();
+        var allErrors = new ArrayList<>(errorsMap.values());
+
+        return Stream.of(
+                Arguments.of("put-request-anime-blank-fields-400.json", allErrors),
+                Arguments.of("put-request-anime-empty-fields-400.json", allErrors));
+    }
+
+    private static Map<String, String> allErrorsMap() {
+        var nameError = "The field 'name' is required";
+        return Map.of(NAME, nameError);
     }
 
 
