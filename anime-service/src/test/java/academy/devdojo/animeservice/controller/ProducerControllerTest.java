@@ -133,7 +133,7 @@ class ProducerControllerTest {
     @Test
     @DisplayName("update() throw ResponseStatusException when no producer is found")
     @Order(6)
-    void update_ThrowsResponseStatusException_WhenNoProducerIsFound() throws Exception {
+    void update_NotFound_WhenNoProducerIsFound() throws Exception {
         var request = fileUtils.readResourceFile("producer/put-request-producer-404.json");
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -158,7 +158,7 @@ class ProducerControllerTest {
     @Test
     @DisplayName("delete() throw ResponseStatusException when no producer is found")
     @Order(8)
-    void delete_ThrowsResponseStatusException_WhenNoProducerIsFound() throws Exception {
+    void delete_NotFound_WhenNoProducerIsFound() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", 1111L))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())

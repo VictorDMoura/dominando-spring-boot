@@ -109,7 +109,7 @@ class AnimeControllerTest {
     @Test
     @DisplayName("findById() throw ResponseStatusException when no anime is found")
     @Order(5)
-    void findById_ThrowsResponseStatusException_WhenNoAnimeIsFound() throws Exception {
+    void findById_NotFound_WhenNoAnimeIsFound() throws Exception {
         var id = 99L;
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", id))
@@ -154,7 +154,7 @@ class AnimeControllerTest {
     @Test
     @DisplayName("delete() throw ResponseStatusException when no anime is found")
     @Order(8)
-    void delete_ThrowsResponseStatusException_WhenNoAnimeIsFound() throws Exception {
+    void delete_NotFound_WhenNoAnimeIsFound() throws Exception {
         var id = 99L;
 
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", id))
@@ -180,7 +180,7 @@ class AnimeControllerTest {
     @Test
     @DisplayName("update() throw ResponseStatusException when no anime is found")
     @Order(10)
-    void update_ThrowsResponseStatusException_WhenNoAnimeIsFound() throws Exception {
+    void update_NotFound_WhenNoAnimeIsFound() throws Exception {
         var request = fileUtils.readResourceFile("anime/put-request-anime-404.json");
 
         mockMvc.perform(MockMvcRequestBuilders
