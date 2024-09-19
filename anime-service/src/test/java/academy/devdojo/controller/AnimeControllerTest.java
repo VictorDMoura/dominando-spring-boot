@@ -110,12 +110,14 @@ class AnimeControllerTest {
     @DisplayName("findById() throw ResponseStatusException when no anime is found")
     @Order(5)
     void findById_NotFound_WhenNoAnimeIsFound() throws Exception {
+        var response = fileUtils.readResourceFile("anime/anime-response-not-found-error-404.json");
         var id = 99L;
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", id))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("Anime not found"));
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
     @Test
@@ -156,11 +158,13 @@ class AnimeControllerTest {
     @Order(8)
     void delete_NotFound_WhenNoAnimeIsFound() throws Exception {
         var id = 99L;
+        var response = fileUtils.readResourceFile("anime/anime-response-not-found-error-404.json");
 
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", id))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("Anime not found"));
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
     @Test
@@ -182,6 +186,7 @@ class AnimeControllerTest {
     @Order(10)
     void update_NotFound_WhenNoAnimeIsFound() throws Exception {
         var request = fileUtils.readResourceFile("anime/put-request-anime-404.json");
+        var response = fileUtils.readResourceFile("anime/anime-response-not-found-error-404.json");
 
         mockMvc.perform(MockMvcRequestBuilders
                         .put(URL)
@@ -189,7 +194,8 @@ class AnimeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("Anime not found"));
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
     @ParameterizedTest

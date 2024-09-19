@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 @WebMvcTest(ProducerController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //@ActiveProfiles("test")
-@Import({FileUtils.class, ProducerUtils.class, ProducerService.class, ProducerMapperImpl.class,  BeanConfig.class})
+@Import({FileUtils.class, ProducerUtils.class, ProducerService.class, ProducerMapperImpl.class, BeanConfig.class})
 class ProducerControllerTest {
 
     @Autowired
@@ -135,6 +135,7 @@ class ProducerControllerTest {
     @Order(6)
     void update_NotFound_WhenNoProducerIsFound() throws Exception {
         var request = fileUtils.readResourceFile("producer/put-request-producer-404.json");
+        var response = fileUtils.readResourceFile("producer/update-producer-not-found-error-404.json");
 
         mockMvc.perform(MockMvcRequestBuilders
                         .put(URL)
@@ -143,7 +144,8 @@ class ProducerControllerTest {
                 )
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("Producer not found to be updated"));
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
     @Test
@@ -159,10 +161,13 @@ class ProducerControllerTest {
     @DisplayName("delete() throw ResponseStatusException when no producer is found")
     @Order(8)
     void delete_NotFound_WhenNoProducerIsFound() throws Exception {
+        var response = fileUtils.readResourceFile("producer/delete-producer-not-found-error-404.json");
+
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", 1111L))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("Producer not found to be deleted"));
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
     @ParameterizedTest
