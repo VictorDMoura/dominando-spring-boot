@@ -2,7 +2,6 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.ProducerUtils;
-import academy.devdojo.config.BeanConfig;
 import academy.devdojo.mapper.ProducerMapperImpl;
 import academy.devdojo.repository.ProducerData;
 import academy.devdojo.repository.ProducerHardCodedRepository;
@@ -33,7 +32,7 @@ import java.util.stream.Stream;
 @WebMvcTest(ProducerController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //@ActiveProfiles("test")
-@Import({FileUtils.class, ProducerUtils.class, ProducerService.class, ProducerMapperImpl.class, BeanConfig.class})
+@Import({FileUtils.class, ProducerUtils.class, ProducerService.class, ProducerMapperImpl.class})
 class ProducerControllerTest {
 
     @Autowired

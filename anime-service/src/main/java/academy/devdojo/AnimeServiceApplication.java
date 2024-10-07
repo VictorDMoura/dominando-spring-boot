@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Arrays;
 
-@SpringBootApplication(scanBasePackages = {"test.outside", "academy.devdojo"})
+@SpringBootApplication
 public class AnimeServiceApplication {
 
     public static void main(String[] args) {
