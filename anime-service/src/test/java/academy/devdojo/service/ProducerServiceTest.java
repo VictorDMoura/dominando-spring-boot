@@ -2,7 +2,7 @@ package academy.devdojo.service;
 
 import academy.devdojo.commons.ProducerUtils;
 import academy.devdojo.domain.Producer;
-import academy.devdojo.repository.ProducerHardCodedRepository;
+import academy.devdojo.repository.ProducerRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ class ProducerServiceTest {
     @InjectMocks
     private ProducerUtils producerUtils;
     @Mock
-    private ProducerHardCodedRepository repository;
+    private ProducerRepository repository;
     private List<Producer> producers;
 
     @BeforeEach
@@ -37,7 +37,7 @@ class ProducerServiceTest {
     @Order(1)
     @DisplayName("findAll() returns a list with all producers")
     void findAll_ReturnsAllProducers_WhenSuccessful() {
-        BDDMockito.when(repository.findByName(null)).thenReturn(this.producers);
+        BDDMockito.when(repository.findAll()).thenReturn(this.producers);
         var producers = service.listAll(null);
         Assertions.assertThat(producers).hasSameElementsAs(this.producers);
     }
@@ -131,7 +131,7 @@ class ProducerServiceTest {
         producerToUpdate.setName("Aniplex");
 
         BDDMockito.when(repository.findById(id)).thenReturn(Optional.of(producerToUpdate));
-        BDDMockito.doNothing().when(repository).update(producerToUpdate);
+        BDDMockito.when(repository.save(producerToUpdate)).thenReturn(producerToUpdate);
 
         Assertions.assertThatNoException().isThrownBy(() -> service.update(producerToUpdate));
     }

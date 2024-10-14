@@ -35,9 +35,10 @@ public class ProducerService {
     }
 
     public void update(Producer producerToUpdate) {
-        var producer = findById(producerToUpdate.getId())
-                .orElseThrow(() -> new NotFoundException("Producer not found to be updated"));
-        producerToUpdate.setCreatedAt(producer.getCreatedAt());
-        repository.save(producerToUpdate);
+        findById(producerToUpdate.getId())
+                .ifPresentOrElse(p -> repository.save(producerToUpdate),
+                        () -> {
+                            throw new NotFoundException("Producer not found to be updated");
+                        });
     }
 }

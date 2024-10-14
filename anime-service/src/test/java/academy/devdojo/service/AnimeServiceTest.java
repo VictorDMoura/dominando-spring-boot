@@ -2,7 +2,7 @@ package academy.devdojo.service;
 
 import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.domain.Anime;
-import academy.devdojo.repository.AnimeHardCodedRepository;
+import academy.devdojo.repository.AnimeRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ class AnimeServiceTest {
     @InjectMocks
     private AnimeUtils animeUtils;
     @Mock
-    private AnimeHardCodedRepository repository;
+    private AnimeRepository repository;
     private List<Anime> animeList;
 
     @BeforeEach
@@ -37,8 +37,8 @@ class AnimeServiceTest {
     @Order(1)
     @DisplayName("findAll() returns a list with all animes")
     void findAll_ReturnsAllAnimes_WhenSuccessful() {
-        BDDMockito.when(repository.findByName(null)).thenReturn(animeList);
-        var animes = service.listAll(null);
+        BDDMockito.when(repository.findAll()).thenReturn(animeList);
+        var animes = service.findAll(null);
         Assertions.assertThat(animes).isNotNull().hasSameElementsAs(animeList);
     }
 
@@ -51,7 +51,7 @@ class AnimeServiceTest {
                 .filter(animes -> animes.getName().equalsIgnoreCase(name))
                 .toList();
         BDDMockito.when(repository.findByName(name)).thenReturn(animeFound);
-        var animes = service.listAll(name);
+        var animes = service.findAll(name);
         Assertions.assertThat(animes).hasSize(1).contains(animeFound.get(0));
     }
 
@@ -61,7 +61,7 @@ class AnimeServiceTest {
     void findAll_ReturnsEmptyList_WhenNoNameIsFound() {
         String name = "x";
         BDDMockito.when(repository.findByName(name)).thenReturn(Collections.emptyList());
-        var anime = service.listAll(name);
+        var anime = service.findAll(name);
         Assertions.assertThat(anime).isNotNull().isEmpty();
     }
 
@@ -139,7 +139,7 @@ class AnimeServiceTest {
         animeToSave.setName("One Piece");
 
         BDDMockito.when(repository.findById(animeToSave.getId())).thenReturn(Optional.of(animeList.get(0)));
-        BDDMockito.doNothing().when(repository).update(animeToSave);
+        BDDMockito.when(repository.save(animeToSave)).thenReturn(animeToSave);
 
         Assertions.assertThatNoException().isThrownBy(() -> service.update(animeToSave));
     }
