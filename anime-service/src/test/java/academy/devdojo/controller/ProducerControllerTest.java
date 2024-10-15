@@ -2,9 +2,9 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.ProducerUtils;
+import academy.devdojo.exception.NotFoundException;
 import academy.devdojo.mapper.ProducerMapperImpl;
 import academy.devdojo.repository.ProducerData;
-import academy.devdojo.repository.ProducerHardCodedRepository;
 import academy.devdojo.service.ProducerService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -16,7 +16,6 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,10 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static academy.devdojo.util.Constants.PRODUCER_NOT_FOUND_DELETE;
+import static academy.devdojo.util.Constants.PRODUCER_NOT_FOUND_UPDATE;
+
 @WebMvcTest(ProducerController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //@ActiveProfiles("test")
-@Import({FileUtils.class, ProducerUtils.class, ProducerService.class, ProducerMapperImpl.class})
+@Import({FileUtils.class, ProducerUtils.class, ProducerMapperImpl.class})
 class ProducerControllerTest {
 
     @Autowired
@@ -43,22 +45,19 @@ class ProducerControllerTest {
     private ProducerUtils producerUtils;
     @MockBean
     private ProducerData producerData;
-    @SpyBean
-    private ProducerHardCodedRepository repository;
+    @MockBean
+    private ProducerService service;
 
     public static final String URL = "/v1/producers";
     private static final String NAME = "name";
-
-    @BeforeEach
-    void init() {
-        BDDMockito.when(producerData.getProducers()).thenReturn(producerUtils.newProducerList());
-    }
 
     @Test
     @DisplayName("findAll() returns a list with all producers")
     @Order(1)
     void findAll_ReturnsAllProducers_WhenSuccessful() throws Exception {
         var response = fileUtils.readResourceFile("producer/get-producer-null-name-200.json");
+
+        BDDMockito.when(service.listAll(null)).thenReturn(producerUtils.newProducerList());
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL))
                 .andDo(MockMvcResultHandlers.print())
@@ -72,6 +71,9 @@ class ProducerControllerTest {
     void findAll_ReturnsFoundProducers_WhenNameIsPassedAndFound() throws Exception {
         var name = "Ufotable";
         var response = fileUtils.readResourceFile("producer/get-producer-ufotable-name-200.json");
+
+        BDDMockito.when(service.listAll(name)).thenReturn(producerUtils.newProducerList()
+                .stream().filter(producer -> producer.getName().equals(name)).toList());
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL).param("name", name))
                 .andDo(MockMvcResultHandlers.print())
@@ -87,6 +89,9 @@ class ProducerControllerTest {
         var name = "x";
         var response = fileUtils.readResourceFile("producer/get-producer-x-name-200.json");
 
+        BDDMockito.when(service.listAll(name)).thenReturn(producerUtils.newProducerList()
+                .stream().filter(producer -> producer.getName().equals(name)).toList());
+
         mockMvc.perform(MockMvcRequestBuilders.get(URL).param("name", name))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -101,7 +106,7 @@ class ProducerControllerTest {
         var response = fileUtils.readResourceFile("producer/post-response-producer-201.json");
         var producerToSave = producerUtils.newProducerToSave();
 
-        BDDMockito.when(repository.save(ArgumentMatchers.any())).thenReturn(producerToSave);
+        BDDMockito.when(service.save(ArgumentMatchers.any())).thenReturn(producerToSave);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post(URL)
@@ -120,6 +125,8 @@ class ProducerControllerTest {
     void update_UpdateProducer_WhenSuccessful() throws Exception {
         var request = fileUtils.readResourceFile("producer/put-request-producer-200.json");
 
+        BDDMockito.doNothing().when(service).update(ArgumentMatchers.any());
+
         mockMvc.perform(MockMvcRequestBuilders
                         .put(URL)
                         .content(request)
@@ -136,6 +143,8 @@ class ProducerControllerTest {
         var request = fileUtils.readResourceFile("producer/put-request-producer-404.json");
         var response = fileUtils.readResourceFile("producer/update-producer-not-found-error-404.json");
 
+        BDDMockito.doThrow(new NotFoundException(PRODUCER_NOT_FOUND_UPDATE)).when(service).update(ArgumentMatchers.any());
+
         mockMvc.perform(MockMvcRequestBuilders
                         .put(URL)
                         .content(request)
@@ -151,6 +160,9 @@ class ProducerControllerTest {
     @DisplayName("delete() removes a producer")
     @Order(7)
     void delete_RemovesProducer_WhenSuccessful() throws Exception {
+
+        BDDMockito.doNothing().when(service).delete(ArgumentMatchers.any());
+
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", 1L))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
@@ -162,7 +174,10 @@ class ProducerControllerTest {
     void delete_NotFound_WhenNoProducerIsFound() throws Exception {
         var response = fileUtils.readResourceFile("producer/delete-producer-not-found-error-404.json");
 
-        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", 1111L))
+        long id = 1111L;
+        BDDMockito.doThrow(new NotFoundException(PRODUCER_NOT_FOUND_DELETE)).when(service).delete(id);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", id))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
