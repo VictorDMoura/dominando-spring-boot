@@ -1,0 +1,41 @@
+{
+  "content": [
+    {
+      "id": 1,
+      "name": "ShingekiNoKyojin"
+    },
+    {
+      "id": 2,
+      "name": "Steins Gate"
+    },
+    {
+      "id": 3,
+      "name": "Mashle"
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "unsorted": true,
+      "empty": true,
+      "sorted": false
+    },
+    "offset": 0,
+    "pageNumber": 0,
+    "pageSize": 3,
+    "paged": true,
+    "unpaged": false
+  },
+  "last": true,
+  "totalPages": 1,
+  "totalElements": 3,
+  "first": true,
+  "size": 3,
+  "number": 0,
+  "sort": {
+    "unsorted": true,
+    "empty": true,
+    "sorted": false
+  },
+  "numberOfElements": 3,
+  "empty": false
+}

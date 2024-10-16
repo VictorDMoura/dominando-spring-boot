@@ -2,6 +2,7 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.commons.FileUtils;
+import academy.devdojo.domain.Anime;
 import academy.devdojo.exception.NotFoundException;
 import academy.devdojo.mapper.AnimeMapperImpl;
 import academy.devdojo.service.AnimeService;
@@ -16,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -54,6 +58,23 @@ class AnimeControllerTest {
         BDDMockito.when(service.findAll(null)).thenReturn(animeUtils.newAnimeList());
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
+    @Test
+    @DisplayName("findAll() returns a paginated list with all animes")
+    @Order(1)
+    void findAll_ReturnsAllAnimesPaginated_WhenSuccessful() throws Exception {
+        var response = fileUtils.readResourceFile("anime/get-anime-paginated-200.json");
+        var animes = animeUtils.newAnimeList();
+        var pageRequest = PageRequest.of(0, animes.size());
+        PageImpl<Anime> pagedAnimes = new PageImpl<>(animes, pageRequest, 1);
+
+        BDDMockito.when(service.findAllPageable(BDDMockito.any(Pageable.class))).thenReturn(pagedAnimes);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URL + "/paginated"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(response));
@@ -115,7 +136,7 @@ class AnimeControllerTest {
         var id = 99L;
 
         BDDMockito.when(service.findById(ArgumentMatchers.any()))
-                        .thenThrow(new NotFoundException(ANIME_NOT_FOUND));
+                .thenThrow(new NotFoundException(ANIME_NOT_FOUND));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", id))
                 .andDo(MockMvcResultHandlers.print())
@@ -155,7 +176,7 @@ class AnimeControllerTest {
         BDDMockito.doNothing().when(service).deleteById(ArgumentMatchers.any());
 
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", id))
-                .andDo(MockMvcResultHandlers.print( ))
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 

@@ -10,6 +10,9 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
@@ -40,6 +43,21 @@ class AnimeServiceTest {
         BDDMockito.when(repository.findAll()).thenReturn(animeList);
         var animes = service.findAll(null);
         Assertions.assertThat(animes).isNotNull().hasSameElementsAs(animeList);
+    }
+
+    @Test
+    @Order(1)
+    @DisplayName("findAll() returns a paginated list with all animes")
+    void findAll_ReturnsPaginatedAnimes_WhenSuccessful() {
+        var pageRequest = PageRequest.of(0, this.animeList.size());
+        var pagedAnimes = new PageImpl<>(this.animeList, pageRequest, 1);
+
+        BDDMockito.when(repository.findAll(BDDMockito.any(Pageable.class))).thenReturn(pagedAnimes);
+
+        var animesFound = service.findAllPageable(pageRequest);
+
+        Assertions.assertThat(animesFound).isNotNull();
+        Assertions.assertThat(animesFound.getContent()).hasSameElementsAs(this.animeList);
     }
 
     @Test
