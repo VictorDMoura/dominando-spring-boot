@@ -26,7 +26,7 @@ public class ProfileController {
 
     @GetMapping
     public ResponseEntity<List<ProfileGetResponse>> list() {
-        log.debug("Request received to list all users");
+        log.debug("Request received to list all profiles");
 
         var profiles = profileService.findAll();
 
@@ -38,7 +38,7 @@ public class ProfileController {
 
     @PostMapping
     public ResponseEntity<ProfilePostResponse> save(@RequestBody @Valid ProfilePostRequest request) {
-        log.info("Request received save a user '{}'", request);
+        log.info("Request received save a profile '{}'", request);
 
         var profile = profileMapper.toProfile(request);
 
