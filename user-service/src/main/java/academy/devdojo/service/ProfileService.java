@@ -1,9 +1,6 @@
 package academy.devdojo.service;
 
 import academy.devdojo.domain.Profile;
-import academy.devdojo.domain.User;
-import academy.devdojo.exception.EmailAlreadyExistsException;
-import academy.devdojo.exception.NotFoundException;
 import academy.devdojo.repository.ProfileRepository;
 import academy.devdojo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

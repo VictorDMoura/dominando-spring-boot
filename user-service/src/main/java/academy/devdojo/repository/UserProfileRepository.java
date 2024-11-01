@@ -19,7 +19,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     @EntityGraph(value = "fullUserProfile")
     List<UserProfile> findAll();
 
-    @Query("select up.user from UserProfile up up.user where up.profile.id = ?1")
+    @Query("select up.user from UserProfile up where up.profile.id = ?1")
     List<User> findAllUsersByProfileId(Long id);
 
 }
